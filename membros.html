@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo Anatómico Avançado | Membro Inferior</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { 
+            background-color: #f8fafc; 
+            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Navegação Minimalista Light Mode */
+        .nav-btn {
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover { color: #0f172a; }
+        .nav-btn.active {
+            color: #0284c7;
+            border-bottom: 2px solid #0284c7;
+            font-weight: 600;
+        }
+        .nav-btn-prova.active {
+            color: #e11d48;
+            border-bottom: 2px solid #e11d48;
+            font-weight: 600;
+        }
+
+        /* Tabela com Linhas Bem Aparentes */
+        .table-container { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        
+        table { border-collapse: collapse; width: 100%; }
+        th { 
+            background-color: #f1f5f9; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+            border: 1px solid #cbd5e1; 
+        }
+        td { 
+            border: 1px solid #e2e8f0; 
+            transition: background-color 0.15s; 
+        }
+        tr:hover td { background-color: #f8fafc; }
+        
+        /* Tags de Nervos */
+        .nerve-tag { 
+            background: #dcfce7; 
+            color: #15803d; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        /* Cores solicitadas por tópico nas colunas */
+        .col-musculo { color: #dc2626; font-weight: 600; }     /* Vermelho */
+        .col-proximal { color: #2563eb; }                      /* Azul */
+        .col-distal { color: #d97706; }                        /* Amarelo/Âmbar escuro legível */
+        .col-inervacao { color: #16a34a; }                     /* Verde */
+        .col-acao { color: #db2777; font-weight: 500; }        /* Rosa */
+
+        /* Botões do Quiz */
+        .quiz-option {
+            transition: all 0.2s;
+            border: 1px solid #cbd5e1;
+            background-color: #ffffff;
+        }
+        .quiz-option:hover:not(:disabled) {
+            border-color: #94a3b8;
+            background-color: #f1f5f9;
+        }
+        .quiz-option.correct {
+            border-color: #16a34a;
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .quiz-option.incorrect {
+            border-color: #dc2626;
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+    <!-- Cabeçalho e Navegação -->
+    <header class="w-full max-w-7xl mb-8 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-200 pb-6 bg-white p-6 rounded-2xl shadow-sm">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">Anatomia do Membro Inferior</h1>
+            <p class="text-sm text-slate-500 mt-1">Guia de Estudo e Avaliação Clínica</p>
+        </div>
+        
+        <nav class="flex flex-wrap gap-3 md:gap-6 text-sm font-medium">
+            <button onclick="changeTab('GLÚTEO')" id="btn-GLÚTEO" class="nav-btn active pb-1">Glúteo / Pélvica</button>
+            <button onclick="changeTab('COXA-ANTERIOR')" id="btn-COXA-ANTERIOR" class="nav-btn pb-1">Coxa Anterior</button>
+            <button onclick="changeTab('COXA-MEDIAL')" id="btn-COXA-MEDIAL" class="nav-btn pb-1">Coxa Medial</button>
+            <button onclick="changeTab('COXA-POSTERIOR')" id="btn-COXA-POSTERIOR" class="nav-btn pb-1">Coxa Posterior</button>
+            <button onclick="changeTab('PERNA')" id="btn-PERNA" class="nav-btn pb-1">Perna</button>
+            <button onclick="changeTab('PÉ')" id="btn-PÉ" class="nav-btn pb-1">Pé</button>
+            
+            <span class="w-px h-5 bg-slate-300 hidden md:inline-block self-center"></span>
+            
+            <button onclick="changeTab('PROVA')" id="btn-PROVA" class="nav-btn-prova pb-1 flex items-center gap-2 text-rose-600 hover:text-rose-700 transition-colors">
+                Modo Prova (ENADE - 50 Questões)
+            </button>
+        </nav>
+    </header>
+
+    <!-- Área de Estudo (Tabela) -->
+    <main id="table-container" class="w-full max-w-7xl bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto table-container max-h-[75vh]">
+            <table>
+                <thead>
+                    <tr class="text-slate-700 text-xs uppercase tracking-wider">
+                        <th class="p-4 font-semibold w-48 text-red-600">Músculo</th>
+                        <th class="p-4 font-semibold min-w-[250px] text-blue-600">Inserção Proximal (Origem)</th>
+                        <th class="p-4 font-semibold min-w-[250px] text-amber-600">Inserção Distal (Inserção)</th>
+                        <th class="p-4 font-semibold min-w-[180px] text-emerald-600">Inervação</th>
+                        <th class="p-4 font-semibold min-w-[250px] text-pink-600">Ação Principal</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="text-slate-700">
+                    <!-- Tabela injetada via JS -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Área de Prova -->
+    <main id="quiz-container" class="w-full max-w-4xl hidden flex-col gap-6">
+        <div class="flex justify-between items-end border-b border-slate-200 pb-4 bg-white p-6 rounded-2xl shadow-sm">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900">Simulado Padrão ENADE</h2>
+                <p class="text-sm text-slate-500 mt-1">50 questões avançadas de anatomia clínica e funcional do membro inferior</p>
+            </div>
+            <div class="text-right">
+                <span class="block text-xs text-slate-400 uppercase tracking-wide">Desempenho</span>
+                <span id="quiz-score" class="text-xl font-mono text-rose-600 font-bold">0/50</span>
+            </div>
+        </div>
+        
+        <div id="question-box" class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
+            <span id="question-number" class="text-rose-600 text-xs font-bold tracking-wider uppercase mb-3 block">Questão 1</span>
+            <p id="question-context" class="text-slate-700 text-sm md:text-base leading-relaxed mb-6 font-normal text-justify"></p>
+            
+            <div id="options-container" class="space-y-3 flex flex-col">
+                <!-- Opções injetadas aqui -->
+            </div>
+        </div>
+        
+        <div id="feedback-box" class="hidden p-5 rounded-xl text-sm md:text-base font-medium border shadow-sm"></div>
+        
+        <button onclick="nextQuestion()" id="next-btn" class="hidden ml-auto px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-medium transition-colors shadow-sm">
+            Avançar para a próxima
+        </button>
+    </main>
+
+    <script>
+        const anatomyData = [
+            // GLÚTEO / PÉLVICA
+            { category: 'GLÚTEO', name: 'Glúteo Máximo', insercaoProximal: 'Ala do ilíaco (face posterior), crista ilíaca, sacro e cóccix', insercaoDistal: 'Trato iliotibial e tuberosidade glútea do fêmur', innervation: 'Nervo glúteo inferior', action: 'Extensão e rotação lateral da coxa, estabilização do joelho' },
+            { category: 'GLÚTEO', name: 'Glúteo Médio', insercaoProximal: 'Face externa do ilíaco (entre as linhas glúteas anterior e posterior)', insercaoDistal: 'Face lateral do trocanter maior do fêmur', innervation: 'Nervo glúteo superior', action: 'Abdução da coxa e rotação medial (fibras anteriores); estabilização da pelve' },
+            { category: 'GLÚTEO', name: 'Glúteo Mínimo', insercaoProximal: 'Face externa do ilíaco (entre as linhas glúteas anterior e inferior)', insercaoDistal: 'Borda anterior do trocanter maior do fêmur', innervation: 'Nervo glúteo superior', action: 'Abdução e rotação medial da coxa' },
+            { category: 'GLÚTEO', name: 'Tensor da Fáscia Lata', insercaoProximal: 'Espinha ilíaca anterossuperior (EIAS) e crista ilíaca', insercaoDistal: 'Trato iliotibial (côndilo lateral da tíbia)', innervation: 'Nervo glúteo superior', action: 'Tensiona a fáscia lata, auxilia na abdução e flexão da coxa' },
+            { category: 'GLÚTEO', name: 'Piriforme', insercaoProximal: 'Face pélvica do sacro (entre os forames sacrais)', insercaoDistal: 'Ápice do trocanter maior do fêmur', innervation: 'Ramos do plexo sacro', action: 'Rotação lateral e abdução da coxa fletida' },
+
+            // COXA ANTERIOR
+            { category: 'COXA-ANTERIOR', name: 'Iliopsoas (Psoas Maior + Ilíaco)', insercaoProximal: 'Psoas: Processos transversos e corpos de T12-L5. Ilíaco: Fossa ilíaca', insercaoDistal: 'Trocânter menor do fêmur', innervation: 'Nervo femoral e ramos diretos lombares', action: 'Principal flexor da coxa/quadril e flexão do tronco' },
+            { category: 'COXA-ANTERIOR', name: 'Reto Femoral', insercaoProximal: 'Espinha ilíaca anteroinferior (EIAI) e margem do acetábulo', insercaoDistal: 'Patela (via tendão do quadríceps) e tuberosidade da tíbia', innervation: 'Nervo femoral', action: 'Flexão da coxa e extensão do joelho' },
+            { category: 'COXA-ANTERIOR', name: 'Vasto Lateral', insercaoProximal: 'Linha intertrocantérica, trocânter maior e lábio lateral da linha áspera', insercaoDistal: 'Base da patela e tendão do quadríceps', innervation: 'Nervo femoral', action: 'Extensão do joelho' },
+            { category: 'COXA-ANTERIOR', name: 'Vasto Medial', insercaoProximal: 'Linha intertrocantérica e lábio medial da linha áspera', insercaoDistal: 'Base da patela e borda medial', innervation: 'Nervo femoral', action: 'Extensão do joelho (estabilização patelar)' },
+            { category: 'COXA-ANTERIOR', name: 'Vasto Intermédio', insercaoProximal: 'Face anterior e lateral do corpo do fêmur', insercaoDistal: 'Tendão do quadríceps e base da patela', innervation: 'Nervo femoral', action: 'Extensão do joelho' },
+            { category: 'COXA-ANTERIOR', name: 'Sartório', insercaoProximal: 'Espinha ilíaca anterossuperior (EIAS)', insercaoDistal: 'Parte superior da face medial da tíbia (pata d\'ganso)', innervation: 'Nervo femoral', action: 'Flexão, abdução e rotação lateral da coxa; flexão do joelho' },
+
+            // COXA MEDIAL
+            { category: 'COXA-MEDIAL', name: 'Pectíneo', insercaoProximal: 'Pectem do púbis (crista pectínea)', insercaoDistal: 'Linha pectínea do fêmur', innervation: 'Nervo femoral (e às vezes obturatório)', action: 'Adução e flexão da coxa' },
+            { category: 'COXA-MEDIAL', name: 'Adutor Longo', insercaoProximal: 'Face externa do púbis (entre a sínfise e o tubérculo púbico)', insercaoDistal: 'Terço médio da linha áspera do fêmur', innervation: 'Nervo obturatório', action: 'Adução e rotação medial da coxa' },
+            { category: 'COXA-MEDIAL', name: 'Adutor Curto', insercaoProximal: 'Ramo inferior do púbis', insercaoDistal: 'Linha pectínea e parte superior da linha áspera', innervation: 'Nervo obturatório', action: 'Adução e flexão da coxa' },
+            { category: 'COXA-MEDIAL', name: 'Adutor Magno', insercaoProximal: 'Ramo isquiopúbico e tuberosidade isquiática', insercaoDistal: 'Linha áspera e tubérculo adutor do fêmur', innervation: 'Nervo obturatório e nervo isquiático (porção pós)', action: 'Adução e extensão da coxa' },
+            { category: 'COXA-MEDIAL', name: 'Grácil', insercaoProximal: 'Ramo inferior do púbis e corpo do púbis', insercaoDistal: 'Face medial da tíbia proximal (pata d\'ganso)', innervation: 'Nervo obturatório', action: 'Adução da coxa e flexão do joelho' },
+
+            // COXA POSTERIOR
+            { category: 'COXA-POSTERIOR', name: 'Bíceps Femoral (Cabeça Longa e Curta)', insercaoProximal: 'Longa: Tuberosidade isquiática. Curta: Linha áspera do fêmur', insercaoDistal: 'Cabeça da fíbula e côndilo lateral da tíbia', innervation: 'Longa: N. isquiático (tibial). Curta: N. isquiático (fibular comum)', action: 'Extensão da coxa e flexão do joelho; rotação lateral da perna fletida' },
+            { category: 'COXA-POSTERIOR', name: 'Semitendíneo', insercaoProximal: 'Tuberosidade isquiática', insercaoDistal: 'Face medial da tíbia proximal (pata d\'ganso)', innervation: 'Nervo isquiático (porção tibial)', action: 'Extensão da coxa, flexão e rotação medial do joelho' },
+            { category: 'COXA-POSTERIOR', name: 'Semimembranáceo', insercaoProximal: 'Tuberosidade isquiática', insercaoDistal: 'Côndilo medial da tíbia (ligamento poplíteo oblíquo)', innervation: 'Nervo isquiático (porção tibial)', action: 'Extensão da coxa, flexão e rotação medial do joelho' },
+
+            // PERNA
+            { category: 'PERNA', name: 'Tibial Anterior', insercaoProximal: 'Condilo lateral e face lateral da tíbia, membrana interóssea', insercaoDistal: 'Face medial do osso cuneiforme medial e base do 1º metatarsal', innervation: 'Nervo fibular profundo', action: 'Diflexão (dorsiflexão) do tornozelo e inversão do pé' },
+            { category: 'PERNA', name: 'Gastrocnêmio', insercaoProximal: 'Côndilos femoral medial e lateral', insercaoDistal: 'Tuberosidade do calcâneo (via tendão de Aquiles/calcâneo)', innervation: 'Nervo tibial', action: 'Flexão plantar do tornozelo e flexão do joelho' },
+            { category: 'PERNA', name: 'Sóleo', insercaoProximal: 'Cabeça da fíbula, terço superior da tíbia (linha do sóleo)', insercaoDistal: 'Tuberosidade do calcâneo (tendão calcâneo)', innervation: 'Nervo tibial', action: 'Flexão plantar do tornozelo (principal motor na marcha)' },
+            { category: 'PERNA', name: 'Fibular Longo', insercaoProximal: 'Cabeça e 2/3 proximais da fíbula, côndilo lateral da tíbia', insercaoDistal: 'Osso cuneiforme medial e base do 1º metatarsal', innervation: 'Nervo fibular superficial', action: 'Eversão e flexão plantar do pé' },
+            { category: 'PERNA', name: 'Tibial Posterior', insercaoProximal: 'Membrana interóssea, tíbia e fíbula posteriores', insercaoDistal: 'Tuberosidade do navicular e cuneiformes/metatarsais', innervation: 'Nervo tibial', action: 'Inversão e flexão plantar do pé; suporte do arco longitudinal' },
+
+            // PÉ
+            { category: 'PÉ', name: 'Abdutor do Hálux', insercaoProximal: 'Processo medial da tuberosidade do calcâneo', insercaoDistal: 'Lado medial da base da falange proximal do hálux', innervation: 'Nervo plantar medial', action: 'Abdução e flexão do hálux' },
+            { category: 'PÉ', name: 'Flexor Curto dos Dedos', insercaoProximal: 'Tuberosidade do calcâneo e aponeurose plantar', insercaoDistal: 'Bases das falanges médias dos dedos 2 a 5', innervation: 'Nervo plantar medial', action: 'Flexão das falanges proximais e médias dos dedos 2 a 5' },
+            { category: 'PÉ', name: 'Interósseos Dorsais do Pé (4)', insercaoProximal: 'Faces adjacentes dos ossos metatarsais', insercaoDistal: 'Bases das falanges proximais (dedos 2 a 4)', innervation: 'Nervo plantar lateral', action: 'Abdução dos dedos em relação ao eixo do 2º dedo' }
+        ];
+
+        // 50 QUESTÕES ESTILO ENADE - MEMBRO INFERIOR
+        const quizData = [
+            {
+                context: "Paciente de 40 anos sofre trauma penetrante na região glútea posterior profunda. Durante a marcha, o paciente apresenta o sinal de Trendelenburg positivo (queda da pelve para o lado oposto ao apoio) ao elevar o membro contralateral.",
+                question: "Qual nervo foi lesionado e qual músculo primariamente perdeu sua função estabilizadora da pelve?",
+                options: [
+                    "Nervo glúteo inferior / Músculo glúteo máximo.",
+                    "Nervo isquiático / Músculos isquiotibiais.",
+                    "Nervo glúteo superior / Músculo glúteo médio e mínimo.",
+                    "Nervo obturatório / Músculo adutor longo.",
+                    "Nervo femoral / Músculo iliopsoas."
+                ],
+                answer: 2
+            },
+            {
+                context: "Um jogador de futebol sofre uma entorse grave no joelho direito durante uma disputa de bola com rotação forçada e valgo excessivo. O exame ortopédico revela gaveta anterior positiva e teste de Lachman positivo.",
+                question: "Qual ligamento intra-articular do joelho foi rompido neste mecanismo de lesão?",
+                options: [
+                    "Ligamento cruzado posterior (LCP).",
+                    "Ligamento cruzado anterior (LCA).",
+                    "Ligamento colateral medial (LCM).",
+                    "Menisco lateral.",
+                    "Ligamento patelar."
+                ],
+                answer: 1
+            },
+            {
+                context: "Durante uma cirurgia de correção de fratura na diáfise do fêmur distal, o cirurgião deve ter cautela extrema com as estruturas que cruzam o hiato dos adutores para entrar na fossa poplítea.",
+                question: "Quais são os principais vasos sanguíneos que passam através do hiato do adutor magno para mudar de denominação?",
+                options: [
+                    "Artéria ilíaca externa para artéria femoral.",
+                    "Artéria femoral para artéria poplítea.",
+                    "Artéria poplítea para artéria tibial anterior.",
+                    "Artéria obturatória para artéria femoral profunda.",
+                    "Artéria isquiática para artéria pudenda."
+                ],
+                answer: 1
+            },
+            {
+                context: "Um motociclista sofre um acidente e apresenta fratura na cabeça da fíbula. Ao exame físico no pronto-socorro, o paciente apresenta incapacidade de realizar dorsiflexão do tornozelo e eversão, resultando em 'pé caído' (marcha escarvante).",
+                question: "Qual estrutura nervosa foi lesionada devido à sua proximidade anatômica com o colo da fíbula?",
+                options: [
+                    "Nervo tibial.",
+                    "Nervo sural.",
+                    "Nervo fibular comum (peroneu comum).",
+                    "Nervo safeno.",
+                    "Nervo obturatório."
+                ],
+                answer: 2
+            },
+            {
+                context: "Uma atleta de corrida relata dor crônica na região anterior da perna após treinos intensos, acompanhada de fraqueza muscular nos dorsiflexores e parestesia no primeiro espaço interdigital. O diagnóstico é de Síndrome Compartimental Anterior.",
+                question: "Qual dos seguintes músculos NÃO pertence ao compartimento anterior da perna afetado por esta síndrome?",
+                options: [
+                    "Tibial anterior.",
+                    "Extensor longo dos dedos.",
+                    "Extensor longo do hálux.",
+                    "Fibular longo.",
+                    "Terceiro fibular."
+                ],
+                answer: 3
+            },
+            {
+                context: "O teste de Thomas é utilizado clinicamente para avaliar a contratura em flexão da articulação do quadril, verificando se o paciente consegue manter a coluna lombar achatada na maca ao flexionar a coxa oposta.",
+                question: "Qual é o principal músculo flexor do quadril avaliado e limitado em casos de contratura positiva?",
+                options: [
+                    "Glúteo máximo.",
+                    "Reto femoral.",
+                    "Iliopsoas.",
+                    "Semitendíneo.",
+                    "Pectíneo."
+                ],
+                answer: 2
+            },
+            {
+                context: "Um homem de 55 anos apresenta dor na panturrilha e edema progressivo após um voo de longa duração. O ultrassom Doppler confirma Trombose Venosa Profunda (TVP). A túnica muscular da panturrilha é essencial para o retorno venoso (coração venoso).",
+                question: "Qual músculo do compartimento posterior da perna é considerado o principal motor dessa bomba muscular venosa?",
+                options: [
+                    "Gastrocnêmio.",
+                    "Sóleo.",
+                    "Poplíteo.",
+                    "Tibial posterior.",
+                    "Plantar."
+                ],
+                answer: 1
+            },
+            {
+                context: "Durante a realização de um bloqueio anestésico para cirurgia no pé, o anestesiologista precisa anestesiar o nervo responsável pela sensibilidade da face medial da perna e do pé até o hálux.",
+                question: "Qual é este nervo, que é o ramo cutâneo terminal mais longo do nervo femoral?",
+                options: [
+                    "Nervo sural.",
+                    "Nervo fibular superficial.",
+                    "Nervo safeno.",
+                    "Nervo tibial.",
+                    "Nervo obturatório."
+                ],
+                answer: 2
+            },
+            {
+                context: "A Tríade Desgraçada (ou tríade de O'Donoghue) clássica do joelho envolve a lesão simultânea de três estruturas anatômicas decorrente de um impacto lateral com o pé fixo no solo.",
+                question: "Quais são as três estruturas afetadas nessa lesão?",
+                options: [
+                    "LCA, Ligamento colateral lateral e menisco lateral.",
+                    "LCP, LCM e menisco lateral.",
+                    "LCA, Ligamento colateral medial (LCM) e menisco medial.",
+                    "Tendão patelar, LCA e tendão do quadríceps.",
+                    "LCP, Ligamento poplíteo e menisco medial."
+                ],
+                answer: 2
+            },
+            {
+                context: "Um paciente sofre um corte profundo na região posterior e inferior do joelho (fossa poplítea). Constata-se perda da flexão plantar do tornozelo e da flexão dos dedos do pé.",
+                question: "Qual é o nervo principal que atravessa a fossa poplítea responsável por estas funções motoras?",
+                options: [
+                    "Nervo femoral.",
+                    "Nervo obturatório.",
+                    "Nervo tibial.",
+                    "Nervo fibular comum.",
+                    "Nervo glúteo inferior."
+                ],
+                answer: 2
+            },
+            // QUESTÕES ADICIONAIS (11 a 50)
+            {
+                context: "O canal adutor (canal de Hunter) é um túnel aponeurótico na coxa que serve de passagem para estruturas vasculonervosas importantes entre a coxa e a fossa poplítea.",
+                question: "Quais estruturas passam pelo canal adutor?",
+                options: [
+                    "Artéria femoral, veia femoral e nervo safeno.",
+                    "Artéria isquiática, veia isquiática e nervo isquiático.",
+                    "Artéria obturatória e nervo obturatório.",
+                    "Nervo femoral e artéria femoral profunda.",
+                    "Artéria poplítea e nervo tibial."
+                ],
+                answer: 0
+            },
+            {
+                context: "Um corredor de maratona apresenta dor na face lateral do joelho, comum devido ao atrito repetitivo do trato iliotibial contra o côndilo femoral lateral durante a flexão e extensão.",
+                question: "Quais são os músculos principais que se fixam e tensionam o trato iliotibial?",
+                options: [
+                    "Glúteo máximo e Tensor da fáscia lata.",
+                    "Reto femoral e Sartório.",
+                    "Bíceps femoral e Semitendíneo.",
+                    "Pectíneo e Grácil.",
+                    "Glúteo mínimo e Piriforme."
+                ],
+                answer: 0
+            },
+            {
+                context: "A marcha anserina (ou marcha de pato) caracteriza-se pela inclinação lateral alternada do tronco a cada passo, decorrente da insuficiência bilateral dos abdutores do quadril.",
+                question: "Quais nervos suprem os músculos responsáveis por evitar essa queda pélvica durante a marcha unipodal?",
+                options: [
+                    "Nervo obturatório.",
+                    "Nervo glúteo superior.",
+                    "Nervo femoral.",
+                    "Nervo isquiático.",
+                    "Nervo glúteo inferior."
+                ],
+                answer: 1
+            },
+            {
+                context: "Uma fratura do colo do fêmur em idosos apresenta alta incidência de necrose avascular da cabeça do fêmur devido à interrupção do suprimento sanguíneo principal que chega através de ramos específicos.",
+                question: "Qual é a principal origem desses ramos arteriais que irrigam a cabeça do fêmur?",
+                options: [
+                    "Artéria ilíaca interna.",
+                    "Artérias circunflexas femoral medial e lateral (ramos da femoral profunda).",
+                    "Artéria obturatória exclusivamente.",
+                    "Artéria pudenda interna.",
+                    "Artéria glútea inferior."
+                ],
+                answer: 1
+            },
+            {
+                context: "O músculo piriforme é uma importante referência anatômica na região glútea, dividindo o espaço ciático em regiões supra-piriforme e infra-piriforme.",
+                question: "Qual é o principal nervo que emerge inferiormente ao músculo piriforme em direção à coxa posterior?",
+                options: [
+                    "Nervo femoral.",
+                    "Nervo obturatório.",
+                    "Nervo isquiático (ciático).",
+                    "Nervo safeno.",
+                    "Nervo cutâneo femoral lateral."
+                ],
+                answer: 2
+            },
+            {
+                context: "A Síndrome do Piriforme ocorre quando o músculo piriforme hipertrofiado ou inflamado comprime o nervo ciático, gerando dor irradiada semelhante a uma lombociatalgia.",
+                question: "Qual é a ação principal do músculo piriforme quando o quadril está em extensão?",
+                options: [
+                    "Rotação medial da coxa.",
+                    "Rotação lateral e abdução da coxa.",
+                    "Flexão pura da coxa.",
+                    "Adução máxima da coxa.",
+                    "Extensão da coxa."
+                ],
+                answer: 1
+            },
+            {
+                context: "O ligamento patelar é a continuação distal do tendão do quadríceps femoral, inserindo-se firmemente em uma proeminência óssea na tíbia proximal.",
+                question: "Qual é a estrutura óssea da tíbia onde o ligamento patelar se insere?",
+                options: [
+                    "Tuberosidade da tíbia.",
+                    "Côndilo medial da tíbia.",
+                    "Linha do sóleo.",
+                    "Espinha tibial anterior.",
+                    "Maloelo medial."
+                ],
+                answer: 0
+            },
+            {
+                context: "A Pata d'Ganso (pes anserinus) é a confluência tendínea de três músculos de compartimentos diferentes da coxa que se inserem na face medial da tíbia proximal.",
+                question: "Quais são os três músculos que compõem a pata d'ganso?",
+                options: [
+                    "Reto femoral, Vastos e Sartório.",
+                    "Sartório, Grácil e Semitendíneo.",
+                    "Bíceps femoral, Semimembranáceo e Pectíneo.",
+                    "Adutor longo, Adutor magno e Grácil.",
+                    "Semitendíneo, Tensor da fáscia lata e Gastrocnêmio."
+                ],
+                answer: 1
+            },
+            {
+                context: "Um jogador de futebol sofre uma pancada direta na face anterior da perna, evoluindo com dor desproporcional, edema tenso, palidez e perda de pulso distal nos artelhos. O diagnóstico é de Síndrome Compartimental Aguda.",
+                question: "Qual compartimento da perna é o mais frequentemente acometido nesta síndrome?",
+                options: [
+                    "Compartimento posterior superficial.",
+                    "Compartimento posterior profundo.",
+                    "Compartimento anterior.",
+                    "Compartimento lateral.",
+                    "Compartimento medial."
+                ],
+                answer: 2
+            },
+            {
+                context: "A luxação traumática posterior da articulação do quadril (comum em acidentes automobilísticos com impacto no painel) coloca em risco direto uma estrutura nervosa importante que passa logo atrás da articulação.",
+                question: "Qual é o nervo mais vulnerável a lesões na luxação posterior do quadril?",
+                options: [
+                    "Nervo femoral.",
+                    "Nervo obturatório.",
+                    "Nervo isquiático.",
+                    "Nervo safeno.",
+                    "Nervo cutâneo femoral lateral."
+                ],
+                answer: 2
+            },
+            {
+                context: "O tríceps sural é formado pela união de dois músculos superficiais e um profundo, cujos tendões convergem para formar o poderoso tendão calcâneo (Aquiles).",
+                question: "Quais músculos compõem o tríceps sural?",
+                options: [
+                    "Gastrocnêmio (cabeças lateral e medial) e Sóleo.",
+                    "Tibial anterior, Tibial posterior e Fibular longo.",
+                    "Semimembranáceo, Semitendíneo e Bíceps femoral.",
+                    "Poplíteo, Plantar e Sóleo.",
+                    "Gastrocnêmio, Plantar e Flexor longo dos dedos."
+                ],
+                answer: 0
+            },
+            {
+                context: "O teste de Thompson (ou squeeze test) é realizado comprimindo-se a panturrilha do paciente em decúbito ventral para avaliar a integridade do tendão calcâneo.",
+                question: "O que indica um resultado positivo (ausência de flexão plantar passiva ao espremer a panturrilha)?",
+                options: [
+                    "Ruptura do ligamento cruzado anterior.",
+                    "Ruptura completa do tendão calcâneo (Aquiles).",
+                    "Lesão do nervo fibular comum.",
+                    "Fratura do maléolo lateral.",
+                    "Trombose venosa profunda."
+                ],
+                answer: 1
+            },
+            {
+                context: "A articulação talocrural (tornozelo) é uma articulação do tipo gínglimo (dobradiça) que permite primariamente movimentos nos eixos sagitais.",
+                question: "Quais são os principais movimentos permitidos por esta articulação?",
+                options: [
+                    "Dorsiflexão e flexão plantar.",
+                    "Inversão e eversão.",
+                    "Abdução e adução do pé.",
+                    "Pronação e supinação pura.",
+                    "Circundução isolada."
+                ],
+                answer: 0
+            },
+            {
+                context: "A entorse do tornozelo mais comum ocorre por um mecanismo de inversão forçada e flexão plantar, afetando preferencialmente os ligamentos laterais.",
+                question: "Qual é o ligamento lateral do tornozelo mais frequentemente lesionado nessa entorse?",
+                options: [
+                    "Ligamento deltoide.",
+                    "Ligamento talofibular anterior.",
+                    "Ligamento calcaneonavicular plantar.",
+                    "Ligamento cruzado anterior.",
+                    "Ligamento patelar."
+                ],
+                answer: 1
+            },
+            {
+                context: "O arco plantar longitudinal é suportado ativamente por tendões musculares e passivamente por fáscias e ligamentos. Um dos músculos mais importantes na sustentação dinâmica deste arco é o...",
+                question: "Selecione o músculo cujo tendão passa posteriormente ao maléolo medial e cruza a sola do pé para sustentar o arco longitudinal.",
+                options: [
+                    "Tibial anterior.",
+                    "Fibular longo.",
+                    "Tibial posterior.",
+                    "Extensor longo do hálux.",
+                    "Gastrocnêmio."
+                ],
+                answer: 2
+            },
+            {
+                context: "A Síndrome do Túnel do Tarso decorre da compressão do nervo tibial ao passar sob o retináculo dos flexores, atrás do maléolo medial.",
+                question: "Quais sintomas clínicos predominam nesta neuropatia compressiva?",
+                options: [
+                    "Dor, queimação e dormência na sola do pé (planta) e artelhos.",
+                    "Fraqueza nos dorsiflexores e pé caído.",
+                    "Dor na face lateral da perna e eversão abolida.",
+                    "Dificuldade de estender o joelho.",
+                    "Perda de sensibilidade na face anterior da coxa."
+                ],
+                answer: 0
+            },
+            {
+                context: "O triângulo femoral (de Scarpa) é uma área anatômica importante na região anterior e superior da coxa, delimitada por estruturas musculares e ligamentares.",
+                question: "Quais são os limites superior, medial e lateral do triângulo femoral?",
+                options: [
+                    "Superior: Ligamento inguinal / Medial: Margem do adutor longo / Lateral: Músculo sartório.",
+                    "Superior: Crista ilíaca / Medial: Reto femoral / Lateral: Grácil.",
+                    "Superior: Trócanter maior / Medial: Pectíneo / Lateral: Tensor da fáscia lata.",
+                    "Superior: Sínfise púbica / Medial: Sartório / Lateral: Adutor longo.",
+                    "Superior: EIAS / Medial: Vasto medial / Lateral: Bíceps femoral."
+                ],
+                answer: 0
+            },
+            {
+                context: "De dentro para fora (medial para lateral), quais são as principais estruturas que preenchem a bainha femoral no interior do triângulo femoral?",
+                question: "Qual é a ordem correta das estruturas vasculares e nervosas na lacuna vascular/triângulo femoral?",
+                options: [
+                    "Nervo femoral, Artéria femoral, Veia femoral.",
+                    "Veia femoral, Artéria femoral, Nervo femoral.",
+                    "Canal femoral (linfáticos), Veia femoral, Artéria femoral (com o nervo femoral logo lateral fora da bainha).",
+                    "Artéria femoral, Veia femoral, Canal femoral.",
+                    "Nervo ciático, Artéria femoral, Veia safena."
+                ],
+                answer: 2
+            },
+            {
+                context: "Os meniscos medial e lateral são estruturas fibrocartilaginosas em forma de 'C' situadas na articulação do joelho, atuando como amortecedores e estabilizadores.",
+                question: "Qual menisco apresenta maior mobilidade e menor incidência de lesões traumáticas devido à sua anatomia livre?",
+                options: [
+                    "Menisco medial.",
+                    "Menisco lateral.",
+                    "Ambos têm a mesma mobilidade.",
+                    "O menisco intercisão.",
+                    "Nenhum dos dois é móvel."
+                ],
+                answer: 1
+            },
+            {
+                context: "O músculo poplíteo localiza-se profundamente na fossa poplítea proximal, cruzando obliquamente a articulação do joelho.",
+                question: "Qual é a função primordial do músculo poplíteo ao iniciar a flexão de um joelho totalmente estendido?",
+                options: [
+                    "Rotação lateral da tíbia.",
+                    "'Destrava' o joelho promovendo a rotação medial da tíbia sobre o fêmur (ou rotação lateral do fêmur).",
+                    "Extensão máxima do joelho.",
+                    "Adução da coxa.",
+                    "Flexão plantar do tornozelo."
+                ],
+                answer: 1
+            },
+            {
+                context: "Um paciente apresenta incapacidade de estender ativamente a perna no joelho, associada à perda da sensibilidade na face anterior da coxa e face medial da perna.",
+                question: "Qual é o nervo periférico principal lesionado que explica este quadro clínico?",
+                options: [
+                    "Nervo isquiático.",
+                    "Nervo obturatório.",
+                    "Nervo femoral.",
+                    "Nervo tibial.",
+                    "Nervo fibular comum."
+                ],
+                answer: 2
+            },
+            {
+                context: "A articulação sacroilíaca é uma articulação sinovial plana e sindesmose que conecta a coluna vertebral (sacro) ao esqueleto apendicular inferior (osso ilíaco).",
+                question: "Qual é a principal função biomecânica desta articulação?",
+                options: [
+                    "Permitir amplos movimentos de rotação do tronco.",
+                    "Transmitir o peso da parte superior do corpo para os membros inferiores.",
+                    "Promover a flexão e extensão primária da bacia na marcha.",
+                    "Atuar como bomba venosa pélvica.",
+                    "Dar suporte exclusivo aos órgãos genitais."
+                ],
+                answer: 1
+            },
+            {
+                context: "O nervo obturatório emerge na pelve e atravessa o forame obturado para inibir e coordenar o compartimento medial da coxa.",
+                question: "Qual dos seguintes músculos NÃO é inervado pelo nervo obturatório?",
+                options: [
+                    "Adutor longo.",
+                    "Grácil.",
+                    "Obturatório externo.",
+                    "Parte do adutor magno.",
+                    "Bíceps femoral (cabeça curta)."
+                ],
+                answer: 4
+            },
+            {
+                context: "A bursite trocantérica é uma inflamação da bursa localizada sobre o trocânter maior do fêmur, causando dor lateral no quadril ao deitar sobre o lado afetado.",
+                question: "Qual músculo fricciona frequentemente esta bursa ao passar sobre o trocânter maior?",
+                options: [
+                    "Glúteo médio e o trato iliotibial.",
+                    "Reto femoral.",
+                    "Iliopsoas.",
+                    "Pectíneo.",
+                    "Sartório."
+                ],
+                answer: 0
+            },
+            {
+                context: "A bursa subtendínea do músculo gastrocnêmio medial localiza-se na parte posterior do joelho e, quando inflamada, pode formar um cisto sinovial conhecido como...",
+                question: "Qual é o nome clínico dado a este cisto poplíteo?",
+                options: [
+                    "Cisto de Baker.",
+                    "Cisto de Tarlov.",
+                    "Cisto sinovial de Dupuytren.",
+                    "Cisto sebáceo do joelho.",
+                    "Higroma patelar."
+                ],
+                answer: 0
+            },
+            {
+                context: "O tendão do músculo tibial posterior insere-se principalmente no osso navicular. A disfunção ou insuficiência deste tendão é a principal causa adquirida de pé plano valgo em adultos.",
+                question: "Qual alteração biomecânica estrutural ocorre primariamente no pé com a insuficiência do tibial posterior?",
+                options: [
+                    "Aumento exagerado do arco longitudinal medial (pé cavo).",
+                    "Desabamento (queda) do arco longitudinal medial com valgismo do retropé.",
+                    "Supinação fixa do antepé.",
+                    "Rigidez completa da articulação subtalar.",
+                    "Elevação do osso calcâneo."
+                ],
+                answer: 1
+            },
+            {
+                context: "A artéria tibial anterior atravessa a membrana interóssea para o compartimento anterior da perna logo abaixo do joelho.",
+                question: "Ao cruzar a articulação do tornozelo anteriormente (na altura do retináculo dos extensores), esta artéria muda de nome para...",
+                options: [
+                    "Artéria plantar medial.",
+                    "Artéria dorsal do pé (pediosa).",
+                    "Artéria fibular.",
+                    "Artéria arqueada.",
+                    "Artéria digital plantar."
+                ],
+                answer: 1
+            },
+            {
+                context: "O plexo lombar é formado pelas raízes ventral de L1 a L4 (com contribuição de T12), situado no interior do músculo psoas maior.",
+                question: "Quais são os dois nervos principais e maiores originados diretamente do plexo lombar que entram no membro inferior?",
+                options: [
+                    "Nervo isquiático e nervo tibial.",
+                    "Nervo femoral e nervo obturatório.",
+                    "Nervo glúteo superior e inferior.",
+                    "Nervo pudendo e nervo cutâneo posterior.",
+                    "Nervo sural e nervo safeno."
+                ],
+                answer: 1
+            },
+            {
+                context: "O plexo sacral (L4 a S4) fornece a inervação motora e sensitiva para a maior parte do membro inferior posterior e para todo o pé.",
+                question: "Qual é o maior nervo do corpo humano, originado do plexo sacral, que transita pela região glútea?",
+                options: [
+                    "Nervo femoral.",
+                    "Nervo obturatório.",
+                    "Nervo isquiático (ciático).",
+                    "Nervo pudendo.",
+                    "Nervo ilioinguinal."
+                ],
+                answer: 2
+            },
+            {
+                context: "A fratura do colo do tálus é uma lesão grave decorrente de dorsiflexão forçada do tornozelo, frequentemente associada a acidentes de trânsito.",
+                question: "Qual complicação vascular é classicamente temida nesta fratura específica do tálus devido ao seu padrão de irrigação retrógrada?",
+                options: [
+                    "Necrose avascular do corpo do tálus.",
+                    "Trombose da veia safena magna.",
+                    "Ruptura da artéria tibial anterior.",
+                    "Síndrome compartimental profunda da coxa.",
+                    "Infecção do tendão calcâneo."
+                ],
+                answer: 0
+            }
+        ];
+
+        // Lógica de Renderização com Linhas Visíveis
+        function formatNerve(text) {
+            return text.replace(/(Nervo [a-zA-Záéíóúâêôãõç ]+|N\. [a-zA-Záéíóúâêôãõç ]+)/g, '<span class="nerve-tag">$1</span>');
+        }
+
+        function renderTable(category) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            const filteredData = anatomyData.filter(item => item.category === category);
+
+            filteredData.forEach(muscle => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td class="p-4 col-musculo">${muscle.name}</td>
+                    <td class="p-4 col-proximal leading-relaxed">${muscle.insercaoProximal}</td>
+                    <td class="p-4 col-distal leading-relaxed">${muscle.insercaoDistal}</td>
+                    <td class="p-4">${formatNerve(muscle.innervation)}</td>
+                    <td class="p-4 col-acao">${muscle.action}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function changeTab(tabName) {
+            document.querySelectorAll('.nav-btn, .nav-btn-prova').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${tabName}`).classList.add('active');
+
+            if (tabName === 'PROVA') {
+                document.getElementById('table-container').classList.add('hidden');
+                document.getElementById('quiz-container').classList.remove('hidden');
+                document.getElementById('quiz-container').classList.add('flex');
+                startQuiz();
+            } else {
+                document.getElementById('quiz-container').classList.add('hidden');
+                document.getElementById('quiz-container').classList.remove('flex');
+                document.getElementById('table-container').classList.remove('hidden');
+                renderTable(tabName);
+            }
+        }
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            updateScore();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = quizData[currentQuestion];
+            
+            document.getElementById('question-number').innerText = `Questão ${currentQuestion + 1} de ${quizData.length}`;
+            document.getElementById('question-context').innerHTML = `<strong>Contexto:</strong> ${q.context}<br><br><strong>Pergunta:</strong> ${q.question}`;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option w-full text-left p-4 rounded-xl text-slate-700 text-sm md:text-base flex gap-4 items-start shadow-sm';
+                btn.innerHTML = `<span class="font-bold text-slate-400 mt-0.5">${letters[index]}.</span> <span>${opt}</span>`;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            const buttons = document.getElementById('options-container').querySelectorAll('button');
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.style.cursor = 'default';
+            });
+
+            const correctIndex = quizData[currentQuestion].answer;
+            const feedbackBox = document.getElementById('feedback-box');
+            
+            feedbackBox.classList.remove('hidden');
+
+            if (selectedIndex === correctIndex) {
+                btnElement.classList.add('correct');
+                feedbackBox.className = 'p-5 rounded-xl text-sm md:text-base font-medium border bg-emerald-50 border-emerald-200 text-emerald-800 mt-4 shadow-sm';
+                feedbackBox.innerText = 'Alternativa Correta! Excelente raciocínio clínico-anatômico.';
+                score++;
+            } else {
+                btnElement.classList.add('incorrect');
+                buttons[correctIndex].classList.add('correct');
+                feedbackBox.className = 'p-5 rounded-xl text-sm md:text-base font-medium border bg-rose-50 border-rose-200 text-rose-800 mt-4 shadow-sm';
+                const letters = ['A', 'B', 'C', 'D', 'E'];
+                feedbackBox.innerText = `Alternativa Incorreta. A resposta certa era a letra ${letters[correctIndex]}.`;
+            }
+
+            updateScore();
+            
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+            nextBtn.innerText = currentQuestion < quizData.length - 1 ? 'Avançar para a próxima' : 'Finalizar Prova';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                showQuestion();
+            } else {
+                const percentage = (score / quizData.length) * 100;
+                let message = percentage >= 70 ? "Desempenho excelente! Você possui grande domínio da anatomia do membro inferior." : "Bom esforço, mas há espaço para revisão da anatomia funcional e clínica.";
+                
+                document.getElementById('question-box').innerHTML = `
+                    <div class="text-center py-12">
+                        <h3 class="text-3xl font-bold text-slate-900 mb-4">Prova Concluída</h3>
+                        <p class="text-xl text-slate-600 mb-2">Acertos: <span class="text-rose-600 font-bold">${score}</span> de ${quizData.length} (${percentage.toFixed(1)}%)</p>
+                        <p class="text-slate-500 mb-8">${message}</p>
+                        <button onclick="startQuiz()" class="px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors shadow-sm">
+                            Refazer o Simulado
+                        </button>
+                    </div>
+                `;
+                document.getElementById('feedback-box').classList.add('hidden');
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('question-number').classList.add('hidden');
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('quiz-score').innerText = `${score}/${quizData.length}`;
+        }
+
+        window.onload = () => changeTab('GLÚTEO');
+    </script>
+</body>
+</html>
